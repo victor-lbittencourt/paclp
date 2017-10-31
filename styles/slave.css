@@ -46,9 +46,14 @@ body {
 }
 
 .slave-header{
-    text-align: left;
     padding-top: 3px;
     padding-bottom: 3px;
+}
+
+.header-btn{
+    position: absolute;
+    right: 25px;
+    top: 7.5px;
 }
 
 .add-watch-btn-group{

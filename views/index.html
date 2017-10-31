@@ -36,16 +36,16 @@
                         <div class="login">
                             <div class="input-group mb-3">
                                 <span class="input-group-addon"><i class="fa fa-at"></i></span>
-                                <input type="text" class="form-control" placeholder="E-mail" ng-model=vm.user.email>
+                                <input type="text" class="form-control" placeholder="E-mail" ng-model=vm.email>
                             </div>
                             <div class="input-group mb-3">
                                 <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                                <input type="password" class="form-control" placeholder="Password" ng-model=vm.user.password>
+                                <input type="password" class="form-control" placeholder="Password" ng-model=vm.password>
                             </div>
                             <div class="login">
                                 <div class="form-check">
                                     <label class="form-check-label">
-                         <input type="checkbox" class="form-check-input">
+                         <input type="checkbox" class="form-check-input" ng-model=vm.rememberMe>
                          Remember me
                      </label>
                                 </div>

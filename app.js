@@ -4,13 +4,8 @@ var app = express();
 var http = require('http').Server(app);
 var port = 8080;
 var io = require('socket.io')(http);
-
-//------------------------------ VARIÁVEIS AUXILIARES ------------------------//
-var user = [{
-    email: 'v',
-    password: 'v',
-    authenticated: false
-}];
+var request = require('request');
+var url = 'http://192.168.0.11:3000';
 
 
 //-----------------------------------ARQUIVOS ESTÁTICOS-----------------------//
@@ -24,36 +19,40 @@ http.listen(port, function(err) {
 });
 
 //---------------------------------EVENTOS------------------------------------//
-io.on('connection', function(socket){
+io.on('connection', function(socket) {
     console.log('Client connected.');
-    //---------------------------LOGIN EVENTS---------------------------------//
-    socket.on('AuthUser', function(data){
-        var auth = false;
-        for (var i = 0; i < user.length; i++) {
-            if(user[i].email===data.email && user[i].password===data.password){
-                auth = true;
-            };
-        };
-        if(auth){
-            socket.emit('UserAuth');
-            console.log('user auth');
-        }
-        else{
-            socket.emit('UserUnauth');
-            console.log('user unauth');
-        };
-    });
-
-    //----------------------------REGISTER EVENTS-----------------------------//
-    socket.on('RegisterUser', function(data){
-        user.push(data);
-        socket.emit('UserRegistered');
-    });
-
-    //-----------------------------IS USER AUTHENTICATED? EVENTS--------------//
     socket.emit('ServerHandshake');
-    socket.on('stored', function(data){
-        console.log('STORED: '+data);
+    socket.on('ClientHandshake', function(data) {
+        if (data.type == 'Coils') {
+            setInterval(function(data, socket) {
+                    request({
+                        url: url + '/users/' + data.id + '/slave_devices/1/read/coils',
+                        headers: {
+                            'Auth-Code': data.token
+                        }
+                    }, function(error, response, body) {
+                        var coils = JSON.parse(body);
+                        socket.emit('Coils', {
+                            coils: coils
+                        });
+                    })
+                },
+                200, data, socket);
+        } else if (data.type == 'HR') {
+            setInterval(function(data, socket) {
+                    request({
+                        url: url + '/users/' + data.id + '/slave_devices/1/read/holding_registers',
+                        headers: {
+                            'Auth-Code': data.token
+                        }
+                    }, function(error, response, body) {
+                        var hr = JSON.parse(body);
+                        socket.emit('HoldingRegisters', {
+                            hr: hr
+                        });
+                    })
+                },
+                200, data, socket);
+        }
     });
-
 });

@@ -3,42 +3,177 @@ app.controller('SlaveCtrl', function AppCtrl($scope, $http) {
     //------------------------ VARIÁVEIS INICIAIS ----------------------------//
     var vm = this;
     vm.socket = io();
-    vm.socket.on('ServerHandshake', function(){
+    vm.url = 'http://192.168.0.11:3000';
+    vm.getSlaveDevice = function() {
+        $http({
+            method: 'GET',
+            url: vm.url + '/users/' + vm.session.user.id + '/slave_devices/1',
+            headers: {
+                'Auth-Code': vm.session.token
+            }
+        }).then(function successCallback(response) {
+                vm.slave = angular.copy(response.data);
+                vm.slaveModal = angular.copy(response.data);
 
-    });
-    vm.coils = [{
-            name: 'Coil 1',
-            value: 20,
-            addres: 'I3:Data2'
-        },
-        {
-            name: 'Coil 2',
-            value: 13,
-            addres: 'I3:Data0'
-        },
-        {
-            name: 'Coil 3',
-            value: 0,
-            addres: 'O1:Data4'
-        }
-    ];
+            },
+            function errorCallback(response) {
+                vm.dropSession();
+            });
+    };
+    vm.resetModalSlaveChanges = function() {
+        vm.slaveModal = angular.copy(vm.slave);
+    };
+    vm.saveModalSlaveChanges = function() {
+        $http({
+            method: 'PATCH',
+            url: vm.url + '/users/' + vm.session.user.id + '/slave_devices/1',
+            params: vm.slaveModal,
+            headers: {
+                'Auth-Code': vm.session.token
+            }
+        }).then(function successCallback(response) {
+                vm.slave = angular.copy(response.data);
+                alert('Slave configurations have been updated\nPlease reset Modbus Master Service to reload configurations.');
+            },
+            function errorCallback(response) {
+                if (response.status == 401 || response.status == 403) {
+                    vm.dropSession();
+                } else if (response.status == 422) {
+                    alert(JSON.stringify(response.data));
+                }
+            });
 
-    vm.hr = [{
-            name: 'HR 1',
-            value: 5.6,
-            addres: 'I1:Data1'
-        },
-        {
-            name: 'HR 2',
-            value: -22.5,
-            addres: 'I2:Data3'
-        },
-        {
-            name: 'HR 3',
-            value: 0.48,
-            addres: 'I3:Data3'
+    };
+    vm.dropSession = function() {
+        localStorage.removeItem("user");
+        sessionStorage.removeItem("user");
+        location.assign('index.html');
+    };
+    vm.verifyAuthentication = function() {
+        $http({
+            method: 'GET',
+            url: vm.url + '/users/' + vm.session.user.id,
+            headers: {
+                'Auth-Code': vm.session.token
+            }
+        }).then(function successCallback(response) {},
+            function errorCallback(response) {
+                vm.dropSession();
+            });
+    };
+    vm.isAuthenticated = function() {
+        if (localStorage.getItem("user")) {
+            vm.session = JSON.parse(localStorage.getItem("user"));
+            vm.verifyAuthentication();
+        } else if (sessionStorage.getItem("user")) {
+            vm.session = JSON.parse(sessionStorage.getItem("user"));
+            vm.verifyAuthentication();
+        } else {
+            vm.session = null;
         }
-    ];
+    };
+
+    vm.saveModalNewCoil = function(){
+        if(!vm.newCoil.read){
+            vm.newCoil.read = false;
+        }
+        if(!vm.newCoil.write){
+            vm.newCoil.write = false;
+        }
+        $http({
+            method: 'POST',
+            url: vm.url + '/users/' + vm.session.user.id + '/slave_devices/1/coils',
+            params: vm.newCoil,
+            headers: {
+                'Auth-Code': vm.session.token
+            }
+        }).then(function successCallback(response) {
+                vm.coils.push(response.data);
+                alert('New coil has been created.\nPlease reset Modbus Master Service to reload configurations.');
+            },
+            function errorCallback(response) {
+                if (response.status == 401 || response.status == 403) {
+                    vm.dropSession();
+                } else if (response.status == 422) {
+                    alert(JSON.stringify(response.data));
+                }
+            });
+    };
+
+    vm.resetModalNewCoil = function(){
+        vm.newCoil = null;
+    };
+
+    vm.saveModalNewHR = function(){
+        if(!vm.newHoldingRegister.read){
+            vm.newHoldingRegister.read = false;
+        }
+        if(!vm.newHoldingRegister.write){
+            vm.newHoldingRegister.write = false;
+        }
+        $http({
+            method: 'POST',
+            url: vm.url + '/users/' + vm.session.user.id + '/slave_devices/1/holding_registers',
+            params: vm.newHoldingRegister,
+            headers: {
+                'Auth-Code': vm.session.token
+            }
+        }).then(function successCallback(response) {
+                vm.hr.push(response.data);
+                alert('New holding register has been created.\nPlease reset Modbus Master Service to reload configurations.');
+            },
+            function errorCallback(response) {
+                if (response.status == 401 || response.status == 403) {
+                    vm.dropSession();
+                } else if (response.status == 422) {
+                    alert(JSON.stringify(response.data));
+                }
+            });
+    };
+
+    vm.resetModalNewHR = function(){
+        vm.newHoldingRegister = null;
+    };
+
+    vm.getCoils = function() {
+        $http({
+            method: 'GET',
+            url: vm.url + '/users/' + vm.session.user.id + '/slave_devices/1/coils',
+            headers: {
+                'Auth-Code': vm.session.token
+            }
+        }).then(function successCallback(response) {
+                vm.coils = response.data;
+            },
+            function errorCallback(response) {
+                vm.dropSession();
+            });
+    };
+
+    vm.getHR = function() {
+        $http({
+            method: 'GET',
+            url: vm.url + '/users/' + vm.session.user.id + '/slave_devices/1/holding_registers',
+            headers: {
+                'Auth-Code': vm.session.token
+            }
+        }).then(function successCallback(response) {
+                vm.hr = response.data;
+            },
+            function errorCallback(response) {
+                vm.dropSession();
+            });
+    };
+
+
+    vm.isAuthenticated();
+    if (!vm.session) {
+        location.assign('index.html');
+    }
+    vm.getSlaveDevice();
+    vm.getCoils();
+    vm.getHR();
+
 
 
 });
@@ -52,15 +187,15 @@ app.controller('SlaveCtrl', function AppCtrl($scope, $http) {
 
 
 /*------------------------ VARIÁVEIS AUXILIARES --------------------------
-    vm.userId = 0;
+    vm.sessionId = 0;
     vm.urlToFetch = '';
     vm.login = 'nothing to show';
 
     //-------------------------- EVENTOS -------------------------------------//
     vm.socket.on('ServerHandshake', function(data) {
-        vm.userId = data.id;
+        vm.sessionId = data.id;
         vm.socket.emit('ClientHandshake', {
-            id: vm.userId
+            id: vm.sessionId
         });
     });
     vm.socket.on('fetchUrl', function(data) {
