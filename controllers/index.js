@@ -20,7 +20,7 @@ app.controller('AppCtrl', function AppCtrl($scope, $http, $location, $window) {
     if (vm.session != null) {
          location.assign("slave.html");
     }
-
+vm.test = 'test';
     vm.userAuthentication = function() {
         $http({
             method: 'POST',

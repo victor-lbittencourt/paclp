@@ -12,7 +12,7 @@ var url = 'http://192.168.0.11:3000';
 app.use(express.static('controllers'));
 app.use(express.static('styles'));
 app.use(express.static('views'));
-
+app.use(express.static('node_modules'));
 //-----------------------------------SERVER CONFIG----------------------------//
 http.listen(port, function(err) {
     console.log("Listening on port " + port);
