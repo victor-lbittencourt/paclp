@@ -8,7 +8,7 @@
     <!-- Referenciando o Socket -->
     <script src="/socket.io/socket.io.js"></script>
     <!-- Importando o Bootstrap 4 -->
-    <link rel="stylesheet" href="bootstrap/dist/js/bootstrap.min.js">
+    <link rel="script" href="bootstrap/dist/js/bootstrap.min.js">
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <!-- Importando o Angular 1.5.11 -->
     <script src="angular/angular.min.js"></script>
@@ -16,8 +16,8 @@
     <script src="index.js"></script>
     <!-- Importando o arquivo de estilo CSS -->
     <link href="index.css" rel="stylesheet">
-    <!-- Utilizando Font Awesome do CDN -->
-    <script src="https://use.fontawesome.com/8ad7a796d8.js"></script>
+    <!-- <script src="font-awesome/css/font-awesome.css"></script> -->
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
 </head>
 
 <body ng-controller="AppCtrl as vm">
@@ -25,7 +25,7 @@
         <h1 class="header-title">MGMT.IO Solutions</h1>
         <div class="stripe"></div>
     </div>
-{{vm.test}}
+
     <div class="container">
         <div class="mt-5" id="accordion" role="tablist">
             <div class="card my-card">
@@ -90,9 +90,9 @@
 
 
     <!-- Importando JQuery3.2.1, Popper e plugins JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script src="/jquery/dist/jquery.min.js"></script>
+    <script src="/popper.js/dist/umd/popper.min.js"></script>
+    <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>
